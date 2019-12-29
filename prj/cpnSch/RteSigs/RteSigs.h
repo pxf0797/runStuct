@@ -3,29 +3,29 @@
 * File name    : RteSigs.h
 * Author       : pxf
 * Version      : v1.0
-* Created on   : 2019/12/28 23:34:56
+* Created on   : 2019/12/29 15:41:45
 * Description  : 
 * Others       : 
-* History      : 191228 pxf 初次建立
+* History      : 191229 pxf 初次建立
 ***************************************************************************/
 
 #ifndef RTESIGS_H_
 #define RTESIGS_H_
 
 /*头文件包含*/
-#include "./standType/standType.h"
-#include "./RteSigs/RteAsynSigs.h"
-#include "./RteSigs/RteSynSigs.h"
-#include "./RteSigs/RteCpnSch.h"
+#include "../Rte/Rte.h"
 
-extern uint32 ulServ2Unpack;
-extern uint8 ucServ3Buff[5];
-void cpn1_serv1_serv(void);
-void cpn1_serv2_serv(void *buff, uint16 buffLen);
-void cpn1_serv3_serv(void *buff, uint16 buffLen);
+/*组件信号*/
+#include "../CpnSch/CpnSchSigs.h"
+#include "../CpnSigs/Cpn1.h"
+#include "../CpnSigs/Cpn2.h"
+#include "../CpnSigs/Cpn3.h"
+#include "../CpnSigs/Cpn4.h"
 
-extern void ServTrigInit(void);
-extern void ServTrigRun(void);
+
+/*所有信号进行匹配*/
+#include "./RteAsynSigs.h"
+#include "./RteSynSigs.h"
 
 #endif /*RTESIGS_H_*/
 

@@ -22,8 +22,13 @@ int main(void){
 	RetSynServTrigInit();
 
 	for(;;){
-		SetGetRun();
-		ServTrigRun();
+		// SetGetRun();
+		// ServTrigRun();
+
+		taskCpn1();
+		taskCpn2();
+		taskCpn3();
+		taskCpn4();
 	}
 }
 

@@ -13,12 +13,11 @@
 #define MAIN_H_
 
 /*头文件包含*/
-#include "./standType/standType.h"
-#include "./RteSigs/RteAsynSigs.h"
-#include "./RteSigs/RteSynSigs.h"
-#include "./RteSigs/RteCpnSch.h"
-#include "./RteSigs.h"
-
+//#include "./standType/standType.h"
+//#include "./RteSigs/RteAsynSigs.h"
+//#include "./RteSigs/RteSynSigs.h"
+//#include "./RteSigs.h"
+#include "./RteSigs/RteSigs.h"
 
 /*名称 : main()
 * 输入 : 无
