@@ -72,6 +72,63 @@ void taskCpn1(void){
     clRteAsynSigs.set(clRteAsynSigs.self,sig_set_Cpn1_send1,&ucCpn1Send1,sizeof(ucCpn1Send1));
     clRteAsynSigs.set(clRteAsynSigs.self,sig_set_Cpn1_send2,&ulCpn1Send2,sizeof(ulCpn1Send2));
     clRteAsynSigs.set(clRteAsynSigs.self,sig_set_Cpn1_send3,ucCpn1Send3,sizeof(ucCpn1Send3));
+
+    static uint32 dealyTime = 100*MS_T;
+    static uint16 uwDelTaskStep = 0;
+    delTaskParam delTask;
+    addTaskParam addTask;
+
+    clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_delay,&dealyTime);
+    if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 0)){
+        delTask.level = level1;
+        delTask.t = taskCpn2;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_delTask,&delTask);
+        uwDelTaskStep = 1;
+
+        dealyTime = 10*MS_T;
+    }else if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 1)){
+        delTask.level = level1;
+        delTask.t = taskCpn4;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_delTask,&delTask);
+        uwDelTaskStep = 2;
+
+        dealyTime = 3*MS_T;
+    }else if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 2)){
+        delTask.level = level1;
+        delTask.t = taskCpn3;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_delTask,&delTask);
+        uwDelTaskStep = 3;
+
+        dealyTime = 8*MS_T;
+    }else if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 3)){
+        addTask.level = level1;
+        addTask.t = taskCpn4;
+        addTask.prdTick = 4;
+        addTask.startTick = 2;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_addTask,&addTask);
+        uwDelTaskStep = 4;
+
+        dealyTime = 5*MS_T;
+    }else if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 4)){
+        addTask.level = level1;
+        addTask.t = taskCpn3;
+        addTask.prdTick = 3;
+        addTask.startTick = 2;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_addTask,&addTask);
+        uwDelTaskStep = 5;
+
+        dealyTime = 3*MS_T;
+    }else if(IS_TIMEOUT(dealyTime) && (uwDelTaskStep == 5)){
+        addTask.level = level1;
+        addTask.t = taskCpn2;
+        addTask.prdTick = 2;
+        addTask.startTick = 1;
+        clRteSynSigs.trig(clRteSynSigs.self,sig_trig_Cpn1_addTask,&addTask);
+        uwDelTaskStep = 6;
+
+        dealyTime = 20*MS_T;
+    }else{}
+    
 }
 
 /**************************** Copyright(C) pxf ****************************/

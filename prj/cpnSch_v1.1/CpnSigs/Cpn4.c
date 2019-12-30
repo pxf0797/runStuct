@@ -42,9 +42,9 @@ void trig_Cpn4_trig2(void){
 void taskCpn4Init(void){
     addTaskParam taskCpn4Param;
     taskCpn4Param.level = level1;
-    taskCpn4Param.t = taskCpn3;
-    taskCpn4Param.prdTick = 350;
-    taskCpn4Param.startTick = 55;
+    taskCpn4Param.t = taskCpn4;
+    taskCpn4Param.prdTick = 2;//350;
+    taskCpn4Param.startTick = 2;//55;
     clRteSynSigs.trig(clRteSynSigs.self, sig_trig_Cpn4_addTask, &taskCpn4Param);
 }
 

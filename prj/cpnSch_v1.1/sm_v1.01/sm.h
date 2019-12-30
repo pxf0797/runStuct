@@ -81,6 +81,7 @@ do{                                                             \
 // state machine run entity 使用状态机指针运行
 // 当前是在有状态机指针定义情况下，不使用SMR运行状态机
 #define SMRE(sm_entity_ptr, sm_rec)  (sm_entity_ptr)[(sm_rec).next](&(sm_rec))
+#define SMREH(sm_entity_ptr, sm_rec_ptr)  (sm_entity_ptr)[sm_rec_ptr->next](sm_rec_ptr)
 
 #endif /* SM_H_ */
 

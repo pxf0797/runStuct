@@ -13,23 +13,33 @@
 #define CPNSCHCFG_H_
 
 /*头文件包含*/
-
-// 每个任务组可以存放32个任务，每个任务等级可以配置不同任务组数
-#define CPN_SCH_LEVEL0_GROUP_NUM_CFG            2U                                      // level0（背景）任务组数配置
-#define CPN_SCH_LEVEL1_GROUP_NUM_CFG            2U                                      // level1任务组数配置
-#define CPN_SCH_LEVEL2_GROUP_NUM_CFG            1U                                      // level2任务组数配置
-#define CPN_SCH_LEVEL3_GROUP_NUM_CFG            1U                                      // level3任务组数配置
-#define CPN_SCH_GROUP_TOTAL_NUMS                (CPN_SCH_LEVEL0_GROUP_NUM_CFG  \
-                                                + CPN_SCH_LEVEL1_GROUP_NUM_CFG \
-                                                + CPN_SCH_LEVEL2_GROUP_NUM_CFG \
-                                                + CPN_SCH_LEVEL3_GROUP_NUM_CFG)         // 总任务组数
+#include "../standType/standType.h"
 
 // 任务功能参数配置
-#define CPN_SCH_TASK_MEASURE_ENABLE             TRUE                                    // 任务运行时间测量 TRUE FALSE
-#define CPN_SCH_TASK_TICK_TIME_US               500U                                    // 单步时间500US
+typedef uint16 taskGroupType;                                                                // 任务组类型 可选 uint8 uint16 uint32
+#define CPN_SCH_TASK_MEASURE_ENABLE                  TRUE                                    // 任务运行时间测量 TRUE FALSE
+#define CPN_SCH_TASK_TICK_TIME_US                    500U                                    // 单步时间500US
+
+// 每个任务组可以存放sizeof(taskGroupType)*8个任务，每个任务等级可以配置不同任务组数
+#define CPN_SCH_LEVEL0_GROUP_NUM_CFG                 2U                                      // level0（背景）任务组数配置
+#define CPN_SCH_LEVEL1_GROUP_NUM_CFG                 2U                                      // level1任务组数配置
+#define CPN_SCH_LEVEL2_GROUP_NUM_CFG                 1U                                      // level2任务组数配置
+#define CPN_SCH_LEVEL3_GROUP_NUM_CFG                 0U                                      // level3任务组数配置
+#define CPN_SCH_GROUP_TOTAL_NUMS                     (CPN_SCH_LEVEL0_GROUP_NUM_CFG  \
+                                                     + CPN_SCH_LEVEL1_GROUP_NUM_CFG \
+                                                     + CPN_SCH_LEVEL2_GROUP_NUM_CFG \
+                                                     + CPN_SCH_LEVEL3_GROUP_NUM_CFG)         // 总任务组数
+
+// 延时步长时间换算参数，当前最大延时长度为32767*CPN_SCH_TASK_TICK_TIME_US us
+// 如果步长为500us，单次最大延时?16.3835?s
+// 如果步长为1000us，单次最大延时32.767?s
+#define MS_T                                         (1000UL/CPN_SCH_TASK_TICK_TIME_US)      // 延时1MS单位
+#define S_T                                          (1000000UL/CPN_SCH_TASK_TICK_TIME_US)   // 延时1S单位
+#define M_T                                          (60000000UL/CPN_SCH_TASK_TICK_TIME_US)  // 延时1MIN单位
+#define IS_TIMEOUT(tick)                             ((tick) & 0x00008000UL)                 // 延时已到为0x00008000，否则为0
 
 // 组件对应错误标志ID
-#define CPN_SCH_TASK_BLOCK_ID                   0U                                      // 错误上报ID
+#define CPN_SCH_TASK_BLOCK_ID                        0U                                      // 错误上报ID
 /*errDefine
 ***********************************************************************************************************************/
 #define CPN_SCH_ADD_TASK_LEVEVL_NOT_EIXST            0x0000U                                 // 添加任务组不存在

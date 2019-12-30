@@ -21,7 +21,7 @@
 * 其他 : CpnSch类功能函数
 ***********************************************/
 void CpnSch_tick(hCpnSch cthis){
-    cthis->SchSmRec.ticker++;
+    cthis->SchSmRec->ticker++;
 }
 
 /*名称 : CpnSch_run(hCpnSch cthis)
@@ -31,7 +31,7 @@ void CpnSch_tick(hCpnSch cthis){
 ***********************************************/
 void CpnSch_run(hCpnSch cthis){
     if(cthis->SchSm){
-        SMRE(cthis->SchSm, cthis->SchSmRec);
+        SMREH(cthis->SchSm, cthis->SchSmRec);
     }
 }
 
@@ -40,7 +40,7 @@ void CpnSch_run(hCpnSch cthis){
 * 输出 : 无
 * 其他 : CpnSch类功能函数
 ***********************************************/
-void CpnSch_time(hCpnSch cthis, uint16 *point){
+void CpnSch_now(hCpnSch cthis, uint16 *point){
     cthis->iTime.getTime(point);
 }
 
@@ -50,8 +50,8 @@ void CpnSch_time(hCpnSch cthis, uint16 *point){
 * 其他 : CpnSch类功能函数
 ***********************************************/
 void CpnSch_addTask(hCpnSch cthis, taskLevel level, task t, uint16 prd, uint16 start){
-    uint32 taskMask = 0;
-    uint32 curTask = 0;
+    taskGroupType taskMask = 0;
+    taskGroupType curTask = 0;
     uint16 taskIndex = 0;
     uint16 groupIndex = 0;
     uint16 levelGroupEnd = 0;
@@ -74,17 +74,17 @@ void CpnSch_addTask(hCpnSch cthis, taskLevel level, task t, uint16 prd, uint16 s
     }
 
     while(groupIndex < levelGroupEnd){
-        taskMask = cthis->SchSmRec.taskGroups[groupIndex].taskMask;
-        if(taskMask^0xFFFFFFFF){
+        taskMask = cthis->SchSmRec->taskGroups[groupIndex].taskMask;
+        if(taskMask+1){
             // 添加新任务
             curTask = (~taskMask);
             curTask = (curTask & (curTask ^ (curTask - 1)));
-            taskIndex = log_2n(curTask);
-            taskMask |= curTask;
+            taskIndex = log_2n((uint32)curTask);
 
-            cthis->SchSmRec.taskGroups[groupIndex].taskGroup[taskIndex] = t;
-            cthis->SchSmRec.taskGroups[groupIndex].prdTick[taskIndex] = prd;
-            cthis->SchSmRec.taskGroups[groupIndex].startTick[taskIndex] = start;
+            cthis->SchSmRec->taskGroups[groupIndex].taskMask |= curTask;
+            cthis->SchSmRec->taskGroups[groupIndex].taskGroup[taskIndex] = t;
+            cthis->SchSmRec->taskGroups[groupIndex].prdTick[taskIndex] = prd;
+            cthis->SchSmRec->taskGroups[groupIndex].startTick[taskIndex] = (cthis->SchSmRec->ticker + start);
             break;
         }else{
             groupIndex++;
@@ -112,8 +112,8 @@ void CpnSch_addTask(hCpnSch cthis, taskLevel level, task t, uint16 prd, uint16 s
 * 其他 : CpnSch类功能函数
 ***********************************************/
 void CpnSch_delTask(hCpnSch cthis, taskLevel level, task t){
-    uint32 taskMask = 0;
-    uint32 curTask = 0;
+    taskGroupType taskMask = 0;
+    taskGroupType curTask = 0;
     uint16 taskIndex = 0;
     uint16 groupIndex = 0;
     uint16 levelGroupEnd = 0;
@@ -136,7 +136,7 @@ void CpnSch_delTask(hCpnSch cthis, taskLevel level, task t){
     }
 
     while(groupIndex < levelGroupEnd){
-        taskMask = cthis->SchSmRec.taskGroups[groupIndex].taskMask;
+        taskMask = cthis->SchSmRec->taskGroups[groupIndex].taskMask;
         if(!taskMask){
             groupIndex++;
             // 不存在任务组中则报错
@@ -158,10 +158,11 @@ void CpnSch_delTask(hCpnSch cthis, taskLevel level, task t){
             while(taskMask){
                 curTask = taskMask;
                 curTask = (curTask & (curTask ^ (curTask - 1)));
-                taskIndex = log_2n(curTask);
-                if(cthis->SchSmRec.taskGroups[groupIndex].taskGroup[taskIndex] == t){
-                    cthis->SchSmRec.taskGroups[groupIndex].taskMask &= (~curTask);
-                    cthis->SchSmRec.taskGroups[groupIndex].actMask &= (~curTask);
+                taskIndex = log_2n((uint32)curTask);
+
+                if(cthis->SchSmRec->taskGroups[groupIndex].taskGroup[taskIndex] == t){
+                    cthis->SchSmRec->taskGroups[groupIndex].taskMask &= (~curTask);
+                    cthis->SchSmRec->taskGroups[groupIndex].actMask &= (~curTask);
                     break;
                 }
                 // 未找到继续找
@@ -200,14 +201,14 @@ void CpnSch_delay(hCpnSch cthis, uint32 *tick){
     uint32 tickTemp = 0;
 
     // 高位为0则认为初始化一个延时
-    if(!(*tick & 0xFFFF0000)){
-        tickTemp = cthis->SchSmRec.ticker;
+    if(!((*tick) & 0xFFFF0000)){
+        tickTemp = cthis->SchSmRec->ticker;
         tickTemp = (tickTemp << 16);
         *tick |= tickTemp;
     }
 
-    tickTemp = ((*tick & 0xFFFF0000) >> 16);
-    if((cthis->SchSmRec.ticker - tickTemp) >= (*tick & 0x00007FFF)){
+    tickTemp = ((*tick) >> 16);
+    if((cthis->SchSmRec->ticker - tickTemp) >= ((*tick) & 0x00007FFF)){
         *tick |= 0x00008000;      // 置起延时已到标志
     }
 }
@@ -226,7 +227,7 @@ void CpnSch_err(hCpnSch cthis, uint16 code){
 * 输出 : hCpnSch - cthis/OOPC_NULL
 * 其他 : CpnSch类初始化函数
 ***********************************************/
-hCpnSch CpnSch_init(hCpnSch cthis, hstaAct SchSm,
+hCpnSch CpnSch_init(hCpnSch cthis, hSchSmRec SchSmRec, hstaAct SchSm,
             void (*getTime)(uint16 *point),
             void (*setErr)(uint16 id, uint16 code)){
     // 功能函数配置
@@ -234,6 +235,8 @@ hCpnSch CpnSch_init(hCpnSch cthis, hstaAct SchSm,
     cthis->iErr.setErr = setErr;
 
     // 参数配置
+    cthis->SchSmRec = SchSmRec;
+    cthis->SchSmRec->next = SchSm_sta_init;
     cthis->SchSm = SchSm;
 
     // 状态机初始化
@@ -251,7 +254,7 @@ CC(CpnSch){
     cthis->init = CpnSch_init;
     cthis->tick = CpnSch_tick;
     cthis->run = CpnSch_run;
-    cthis->time = CpnSch_time;
+    cthis->now = CpnSch_now;
     cthis->addTask = CpnSch_addTask;
     cthis->delTask = CpnSch_delTask;
     cthis->delay = CpnSch_delay;
@@ -263,7 +266,7 @@ CC(CpnSch){
     cthis->currTaskTime = 0;
     cthis->totalTaskTime = 0;
     cthis->SchSm = NULL;
-    cthis->SchSmRec.next = SchSm_sta_init;
+    cthis->SchSmRec = NULL;
 
     return cthis;
 }

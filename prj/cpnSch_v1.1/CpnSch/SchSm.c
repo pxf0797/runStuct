@@ -17,6 +17,7 @@
 * 配置状态机相关处理状态
 ***********************************************/
 SMDF(SchSm, SCHSM_LIST);
+SchSmRec SchSmRunRec;
 extern CpnSch clCpnSch;
 
 /*名称 : SchSm_act_init()
@@ -33,7 +34,7 @@ void SchSm_act_init(void *SchSmRec){
     hRec->taskGroupNum = CPN_SCH_GROUP_TOTAL_NUMS;
     hRec->CpnSch = &clCpnSch;
     for(i = 0; i < CPN_SCH_GROUP_TOTAL_NUMS; i++){
-        for(j = 0; j < 32; j++){
+        for(j = 0; j < sizeof(taskGroupType)*8; j++){
             hRec->taskGroups[i].startTick[j] = 0;
             hRec->taskGroups[i].prdTick[j] = 0;
             hRec->taskGroups[i].taskGroup[j] = NULL;
@@ -67,8 +68,8 @@ void SchSm_act_default(void *SchSmRec){
 ***********************************************/
 void SchSm_act_update(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
-    uint32 taskMask = 0;
-    uint32 curTask = 0;
+    taskGroupType taskMask = 0;
+    taskGroupType curTask = 0;
     uint16 taskIndex = 0;
     int16 i = 0;
 
@@ -78,7 +79,7 @@ void SchSm_act_update(void *SchSmRec){
         while(taskMask != 0){
             curTask = (taskMask & (taskMask ^ (taskMask - 1)));
             taskMask ^= curTask;
-            taskIndex = log_2n(curTask);
+            taskIndex = log_2n((uint32)curTask);
 
             if((hRec->ticker - hRec->taskGroups[i].startTick[taskIndex]) >= hRec->taskGroups[i].prdTick[taskIndex]){
                 // 更新激活状态以及下一激活起始节拍
@@ -99,14 +100,14 @@ void SchSm_act_update(void *SchSmRec){
 ***********************************************/
 void SchSm_act_execute(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
-    uint32 taskMask = 0;
-    uint32 curTask = 0;
+    taskGroupType taskMask = 0;
+    taskGroupType curTask = 0;
     uint16 taskIndex = 0;
     int16 i = 0;
 #if (CPN_SCH_TASK_MEASURE_ENABLE == TRUE)
     static uint16 taskTimePot = 0;
     uint16 currUsage = 0;
-    ((hCpnSch)(hRec->CpnSch))->time(hRec->CpnSch, &taskTimePot);
+    ((hCpnSch)(hRec->CpnSch))->now(hRec->CpnSch, &taskTimePot);
 #endif
 
     for(i = 0; i < hRec->taskGroupNum; i++){
@@ -117,7 +118,7 @@ void SchSm_act_execute(void *SchSmRec){
             //taskMask ^= curTask;
             //hRec->taskGroups[i].actMask ^= curTask; // 容易引发不可控结果
             hRec->taskGroups[i].actMask &= (~curTask);
-            taskIndex = log_2n(curTask);
+            taskIndex = log_2n((uint32)curTask);
 
             // 判断是否为一次性任务，如果非level0背景任务则把任务掩码去除
             if((hRec->taskGroups[i].prdTick[taskIndex] == 0) && (i < (hRec->taskGroupNum - CPN_SCH_LEVEL0_GROUP_NUM_CFG))){
@@ -134,14 +135,14 @@ void SchSm_act_execute(void *SchSmRec){
 
 #if (CPN_SCH_TASK_MEASURE_ENABLE == TRUE)
     ((hCpnSch)(hRec->CpnSch))->currTaskTime = taskTimePot;
-    ((hCpnSch)(hRec->CpnSch))->time(hRec->CpnSch, &taskTimePot);
+    ((hCpnSch)(hRec->CpnSch))->now(hRec->CpnSch, &taskTimePot);
     ((hCpnSch)(hRec->CpnSch))->currTaskTime = taskTimePot - ((hCpnSch)(hRec->CpnSch))->currTaskTime;
     // 目前时间测量精确到1us，使用率精确到0.1%
     if(i < (hRec->taskGroupNum - CPN_SCH_LEVEL0_GROUP_NUM_CFG)){
         ((hCpnSch)(hRec->CpnSch))->totalTaskTime += ((hCpnSch)(hRec->CpnSch))->currTaskTime;
     }else{
         if(((hCpnSch)(hRec->CpnSch))->totalTaskTime){
-            currUsage = (((hCpnSch)(hRec->CpnSch))->totalTaskTime * 10U / CPN_SCH_TASK_TICK_TIME_US);
+            currUsage = (((hCpnSch)(hRec->CpnSch))->totalTaskTime * 1000U / CPN_SCH_TASK_TICK_TIME_US);
             ((hCpnSch)(hRec->CpnSch))->usage = lowpassFilter(currUsage, (uint32)((hCpnSch)(hRec->CpnSch))->usage, 4U);
             ((hCpnSch)(hRec->CpnSch))->totalTaskTime = 0U;
         }
@@ -150,6 +151,7 @@ void SchSm_act_execute(void *SchSmRec){
 
     if(hRec->ticker != hRec->tickerLast)
     {
+    	hRec->tickerLast = hRec->ticker;
         hRec->next = SchSm_sta_update;
     }else if((i >= hRec->taskGroupNum) && (!hRec->taskGroups[hRec->taskGroupNum - 1].actMask)){
         hRec->next = SchSm_sta_updateBgTask;
@@ -174,6 +176,7 @@ void SchSm_act_updateBgTask(void *SchSmRec){
 
     if(hRec->ticker != hRec->tickerLast)
     {
+    	hRec->tickerLast = hRec->ticker;
         hRec->next = SchSm_sta_update;
     }else{
         hRec->next = SchSm_sta_execute;

@@ -46,7 +46,7 @@ typedef enum{
 ***********************************************/
 CL(CpnSch){
     hCpnSch self;
-    hCpnSch (*init)(hCpnSch cthis, hstaAct SchSm,
+    hCpnSch (*init)(hCpnSch cthis, hSchSmRec SchSmRec, hstaAct SchSm,
             void (*getTime)(uint16 *point),
             void (*setErr)(uint16 id, uint16 code));
 
@@ -56,7 +56,7 @@ CL(CpnSch){
     uint16 totalTaskTime;    // 总任务执行时间
 
     // 组件运行状态机
-    SchSmRec SchSmRec;
+    hSchSmRec SchSmRec;
     hstaAct SchSm;
 
     // 组件服务函数（需要被调用）
@@ -67,7 +67,7 @@ CL(CpnSch){
     void (*delay)(hCpnSch cthis, uint32 *tick);
 
     // 组件触发函数（调用其他函数）
-    void (*time)(hCpnSch cthis, uint16 *point);
+    void (*now)(hCpnSch cthis, uint16 *point);
     void (*err)(hCpnSch cthis, uint16 code);
 
     // 接口函数

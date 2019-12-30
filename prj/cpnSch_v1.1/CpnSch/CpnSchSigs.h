@@ -67,7 +67,7 @@ void serv_CpnSch_delTask(void *buff);
 void serv_CpnSch_delay(void *buff);
 /*实时服务
 ***********************************************/
-void serv_CpnSch_time(void *buff);
+void serv_CpnSch_now(void *buff);
 /*初始化服务
 ***********************************************/
 void serv_CpnSch_init(void);
@@ -107,7 +107,7 @@ void trig_CpnSch_inf_setErr(uint16 id, uint16 code);
     _(sig_serv_CpnSch_addTask,serv_CpnSch_addTask)                 \
     _(sig_serv_CpnSch_delTask,serv_CpnSch_delTask)                 \
     _(sig_serv_CpnSch_delay,serv_CpnSch_delay)                     \
-    _(sig_serv_CpnSch_time,serv_CpnSch_time)                       \
+    _(sig_serv_CpnSch_now,serv_CpnSch_now)                         \
     _(sig_serv_CpnSch_init,serv_CpnSch_init)                       \
     _(sig_serv_CpnSch_run,serv_CpnSch_run)                         \
     _(sig_serv_CpnSch_tick,serv_CpnSch_tick)

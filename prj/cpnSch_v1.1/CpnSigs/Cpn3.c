@@ -42,8 +42,8 @@ void taskCpn3Init(void){
     addTaskParam taskCpn3Param;
     taskCpn3Param.level = level1;
     taskCpn3Param.t = taskCpn3;
-    taskCpn3Param.prdTick = 350;
-    taskCpn3Param.startTick = 55;
+    taskCpn3Param.prdTick = 3;//350;
+    taskCpn3Param.startTick = 2;//55;
     clRteSynSigs.trig(clRteSynSigs.self, sig_trig_Cpn3_addTask, &taskCpn3Param);
 }
 

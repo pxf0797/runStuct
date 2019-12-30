@@ -38,6 +38,9 @@ int main(void){
 		// taskCpn3();
 		// taskCpn4();
 
+		extern uint16 uwTimeCnt;
+		uwTimeCnt += 100;
+
 		if(!(uwTickCnt & 0x0003)){
 			trig_Abi_tick();
 		}

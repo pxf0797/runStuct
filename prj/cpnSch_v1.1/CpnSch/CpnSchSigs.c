@@ -42,13 +42,13 @@ void serv_CpnSch_delay(void *buff){
 }
 /*实时服务
 ***********************************************/
-void serv_CpnSch_time(void *buff){
-    clCpnSch.time(clCpnSch.self, buff);
+void serv_CpnSch_now(void *buff){
+    clCpnSch.now(clCpnSch.self, buff);
 }
 /*初始化服务
 ***********************************************/
 void serv_CpnSch_init(void){
-    CN(CpnSch, &clCpnSch, SchSm, trig_CpnSch_inf_getTime, trig_CpnSch_inf_setErr);
+    CN(CpnSch, &clCpnSch, &SchSmRunRec, SchSm, trig_CpnSch_inf_getTime, trig_CpnSch_inf_setErr);
     if(OPRS(clCpnSch) != NULL){}
 }
 /*运行服务

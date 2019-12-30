@@ -42,11 +42,11 @@ typedef void(*task)(void);                        // 任务定义
 /*任务组声明
 ***********************************************/
 typedef struct{
-    uint16 startTick[32];     // 调度周期起始节拍
-    uint16 prdTick[32];       // 周期调度节拍
-    uint32 actMask;           // 激活请求任务掩码
-    uint32 taskMask;          // 已分配任务掩码
-    task taskGroup[32];       // 任务组
+    uint16 startTick[sizeof(taskGroupType)*8];    // 调度周期起始节拍
+    uint16 prdTick[sizeof(taskGroupType)*8];      // 周期调度节拍
+    taskGroupType actMask;                        // 激活请求任务掩码
+    taskGroupType taskMask;                       // 已分配任务掩码
+    task taskGroup[sizeof(taskGroupType)*8];      // 任务组
 } taskGroupSm;
 
 /*状态机SchSm状态序列定义
@@ -70,6 +70,7 @@ SMDC(SchSm, SCHSM_LIST){
     taskGroupSm taskGroups[CPN_SCH_GROUP_TOTAL_NUMS];  // 任务组
     void *CpnSch;           // 注入组件类
 };
+extern SchSmRec SchSmRunRec;
 
 /*log_2n 纯粹求2^n的对应的对数n
 * 输入: 2^n

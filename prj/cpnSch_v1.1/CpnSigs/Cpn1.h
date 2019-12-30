@@ -74,7 +74,10 @@ void serv_Cpn1_serv3(void *buff);
 * 配置信号时需要检查服务信号的长度对信号进行映射
 ***********************************************/
 #define SIGNAL_TRIG_MAP_LIST_RTESYN_CPN1(_)                 \
-    _(sig_trig_Cpn1_addTask,sig_serv_CpnSch_addTask)
+    _(sig_trig_Cpn1_addTask,sig_serv_CpnSch_addTask)        \
+    _(sig_trig_Cpn1_delTask,sig_serv_CpnSch_delTask)        \
+    _(sig_trig_Cpn1_delay,sig_serv_CpnSch_delay)            \
+    _(sig_trig_Cpn1_now,sig_serv_CpnSch_now)                \
 
 
 /***********************************************************
