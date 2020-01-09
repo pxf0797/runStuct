@@ -4,26 +4,26 @@
 * Author       : pxf
 * Version      : v1.0
 * Created on   : 2019/12/28 14:24:20
-* Description  : ×´Ì¬»úSchSm¶¨Òå¼°¸÷×´Ì¬¶¯×÷¶¨ÒåÔ´ÎÄ¼ş
+* Description  : çŠ¶æ€æœºSchSmå®šä¹‰åŠå„çŠ¶æ€åŠ¨ä½œå®šä¹‰æºæ–‡ä»¶
 * Others       : 
-* History      : 191228 pxf ³õ´Î½¨Á¢
+* History      : 191228 pxf åˆæ¬¡å»ºç«‹
 ***************************************************************************/
 
-/*Í·ÎÄ¼ş°üº¬*/
+/*å¤´æ–‡ä»¶åŒ…å«*/
 #include "./SchSm.h"
 #include "./CpnSch.h"
 
-/*×´Ì¬»úSchSm¶¨Òå
-* ÅäÖÃ×´Ì¬»úÏà¹Ø´¦Àí×´Ì¬
+/*çŠ¶æ€æœºSchSmå®šä¹‰
+* é…ç½®çŠ¶æ€æœºç›¸å…³å¤„ç†çŠ¶æ€
 ***********************************************/
 SMDF(SchSm, SCHSM_LIST);
 SchSmRec SchSmRunRec;
 extern CpnSch clCpnSch;
 
-/*Ãû³Æ : SchSm_act_init()
-* ÊäÈë : SchSmRec - ×´Ì¬¼ÇÂ¼²ÎÊıÖ¸Õë
-* Êä³ö : ÎŞ
-* ÆäËû : ³õÊ¼×´Ì¬²Ù×÷º¯Êı
+/*åç§° : SchSm_act_init()
+* è¾“å…¥ : SchSmRec - çŠ¶æ€è®°å½•å‚æ•°æŒ‡é’ˆ
+* è¾“å‡º : æ— 
+* å…¶ä»– : åˆå§‹çŠ¶æ€æ“ä½œå‡½æ•°
 ***********************************************/
 void SchSm_act_init(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
@@ -48,10 +48,10 @@ void SchSm_act_init(void *SchSmRec){
     hRec->last = SchSm_sta_init;
 }
 
-/*Ãû³Æ : SchSm_act_default()
-* ÊäÈë : SchSmRec - ×´Ì¬¼ÇÂ¼²ÎÊıÖ¸Õë
-* Êä³ö : ÎŞ
-* ÆäËû : Ä¬ÈÏ×´Ì¬²Ù×÷º¯Êı
+/*åç§° : SchSm_act_default()
+* è¾“å…¥ : SchSmRec - çŠ¶æ€è®°å½•å‚æ•°æŒ‡é’ˆ
+* è¾“å‡º : æ— 
+* å…¶ä»– : é»˜è®¤çŠ¶æ€æ“ä½œå‡½æ•°
 ***********************************************/
 void SchSm_act_default(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
@@ -62,10 +62,10 @@ void SchSm_act_default(void *SchSmRec){
     hRec->last = SchSm_sta_default;
 }
 
-/*Ãû³Æ : SchSm_act_update()
-* ÊäÈë : SchSmRec - ×´Ì¬¼ÇÂ¼²ÎÊıÖ¸Õë
-* Êä³ö : ÎŞ
-* ÆäËû : ×´Ì¬update²Ù×÷º¯Êı
+/*åç§° : SchSm_act_update()
+* è¾“å…¥ : SchSmRec - çŠ¶æ€è®°å½•å‚æ•°æŒ‡é’ˆ
+* è¾“å‡º : æ— 
+* å…¶ä»– : çŠ¶æ€updateæ“ä½œå‡½æ•°
 ***********************************************/
 void SchSm_act_update(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
@@ -74,9 +74,9 @@ void SchSm_act_update(void *SchSmRec){
     uint16 taskIndex = 0;
     int16 i = 0;
 
-    // ÌŞ³ı±³¾°ÈÎÎñ¸üĞÂÖ´ĞĞ±êÖ¾
+    // å‰”é™¤èƒŒæ™¯ä»»åŠ¡æ›´æ–°æ‰§è¡Œæ ‡å¿—
     for(i = 0; i < hRec->taskGroupNum - CPN_SCH_LEVEL0_GROUP_NUM_CFG; i++){
-        // ¸üĞÂ¸÷×é¼¤»îÈÎÎñ
+        // æ›´æ–°å„ç»„æ¿€æ´»ä»»åŠ¡
         taskMask = hRec->taskGroups[i].taskMask;
         while(taskMask != 0){
             curTask = (taskMask & (taskMask ^ (taskMask - 1)));
@@ -84,25 +84,25 @@ void SchSm_act_update(void *SchSmRec){
             taskIndex = log_2n((uint32)curTask);
 
             if(hRec->taskGroups[i].unstartMask){
-                // ¼ì²éµ±Ç°ÈÎÎñÊÇ·ñ½øÈëÖÜÆÚÖ´ĞĞ
+                // æ£€æŸ¥å½“å‰ä»»åŠ¡æ˜¯å¦è¿›å…¥å‘¨æœŸæ‰§è¡Œ
                 if(hRec->taskGroups[i].unstartMask & curTask){
-                    if(hRec->ticker == hRec->taskGroups[i].startTick[taskIndex]){
+                    if((hRec->ticker - hRec->taskGroups[i].startTick[taskIndex]) <= 2U){
                         hRec->taskGroups[i].unstartMask &= (~curTask);
-                        // ¸üĞÂ¼¤»î×´Ì¬ÒÔ¼°ÏÂÒ»¼¤»îÆğÊ¼½ÚÅÄ
+                        // æ›´æ–°æ¿€æ´»çŠ¶æ€ä»¥åŠä¸‹ä¸€æ¿€æ´»èµ·å§‹èŠ‚æ‹
                         hRec->taskGroups[i].actMask |= curTask;
                         //hRec->taskGroups[i].startTick[taskIndex] += hRec->taskGroups[i].prdTick[taskIndex];
                     }
                 }else{
                     if((hRec->ticker - hRec->taskGroups[i].startTick[taskIndex]) >= hRec->taskGroups[i].prdTick[taskIndex]){
-                        // ¸üĞÂ¼¤»î×´Ì¬ÒÔ¼°ÏÂÒ»¼¤»îÆğÊ¼½ÚÅÄ
+                        // æ›´æ–°æ¿€æ´»çŠ¶æ€ä»¥åŠä¸‹ä¸€æ¿€æ´»èµ·å§‹èŠ‚æ‹
                         hRec->taskGroups[i].actMask |= curTask;
                         hRec->taskGroups[i].startTick[taskIndex] += hRec->taskGroups[i].prdTick[taskIndex];
                     }
                 }
             }else{
-                // È«²¿½øÈëÖÜÆÚÖ´ĞĞ
+                // å…¨éƒ¨è¿›å…¥å‘¨æœŸæ‰§è¡Œ
                 if((hRec->ticker - hRec->taskGroups[i].startTick[taskIndex]) >= hRec->taskGroups[i].prdTick[taskIndex]){
-                    // ¸üĞÂ¼¤»î×´Ì¬ÒÔ¼°ÏÂÒ»¼¤»îÆğÊ¼½ÚÅÄ
+                    // æ›´æ–°æ¿€æ´»çŠ¶æ€ä»¥åŠä¸‹ä¸€æ¿€æ´»èµ·å§‹èŠ‚æ‹
                     hRec->taskGroups[i].actMask |= curTask;
                     hRec->taskGroups[i].startTick[taskIndex] += hRec->taskGroups[i].prdTick[taskIndex];
                 }
@@ -114,10 +114,10 @@ void SchSm_act_update(void *SchSmRec){
     hRec->last = SchSm_sta_update;
 }
 
-/*Ãû³Æ : SchSm_act_execute()
-* ÊäÈë : SchSmRec - ×´Ì¬¼ÇÂ¼²ÎÊıÖ¸Õë
-* Êä³ö : ÎŞ
-* ÆäËû : ×´Ì¬execute²Ù×÷º¯Êı
+/*åç§° : SchSm_act_execute()
+* è¾“å…¥ : SchSmRec - çŠ¶æ€è®°å½•å‚æ•°æŒ‡é’ˆ
+* è¾“å‡º : æ— 
+* å…¶ä»– : çŠ¶æ€executeæ“ä½œå‡½æ•°
 ***********************************************/
 void SchSm_act_execute(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
@@ -132,21 +132,21 @@ void SchSm_act_execute(void *SchSmRec){
 #endif
 
     for(i = 0; i < hRec->taskGroupNum; i++){
-        // ²é¿´¼¤»îÈÎÎñ£¬²¢Ö´ĞĞ×î¸ßÓÅÏÈ¼¶ÈÎÎñ
+        // æŸ¥çœ‹æ¿€æ´»ä»»åŠ¡ï¼Œå¹¶æ‰§è¡Œæœ€é«˜ä¼˜å…ˆçº§ä»»åŠ¡
         taskMask = hRec->taskGroups[i].actMask;
         if(taskMask != 0){
             curTask = (taskMask & (taskMask ^ (taskMask - 1)));
             //taskMask ^= curTask;
-            //hRec->taskGroups[i].actMask ^= curTask; // ÈİÒ×Òı·¢²»¿É¿Ø½á¹û
+            //hRec->taskGroups[i].actMask ^= curTask; // å®¹æ˜“å¼•å‘ä¸å¯æ§ç»“æœ
             hRec->taskGroups[i].actMask &= (~curTask);
             taskIndex = log_2n((uint32)curTask);
 
-            // ÅĞ¶ÏÊÇ·ñÎªÒ»´ÎĞÔÈÎÎñ£¬Èç¹û·Çlevel0±³¾°ÈÎÎñÔò°ÑÈÎÎñÑÚÂëÈ¥³ı
+            // åˆ¤æ–­æ˜¯å¦ä¸ºä¸€æ¬¡æ€§ä»»åŠ¡ï¼Œå¦‚æœélevel0èƒŒæ™¯ä»»åŠ¡åˆ™æŠŠä»»åŠ¡æ©ç å»é™¤
             if((hRec->taskGroups[i].prdTick[taskIndex] == 0) && (i < (hRec->taskGroupNum - CPN_SCH_LEVEL0_GROUP_NUM_CFG))){
                 hRec->taskGroups[i].taskMask &= (~curTask);
             }
 
-            // Ö´ĞĞÈÎÎñ
+            // æ‰§è¡Œä»»åŠ¡
             if(hRec->taskGroups[i].taskGroup[taskIndex]){
                 hRec->taskGroups[i].taskGroup[taskIndex]();
             }
@@ -158,7 +158,7 @@ void SchSm_act_execute(void *SchSmRec){
     ((hCpnSch)(hRec->CpnSch))->currTaskTime = taskTimePot;
     ((hCpnSch)(hRec->CpnSch))->now(hRec->CpnSch, &taskTimePot);
     ((hCpnSch)(hRec->CpnSch))->currTaskTime = taskTimePot - ((hCpnSch)(hRec->CpnSch))->currTaskTime;
-    // Ä¿Ç°Ê±¼ä²âÁ¿¾«È·µ½1us£¬Ê¹ÓÃÂÊ¾«È·µ½0.1%
+    // ç›®å‰æ—¶é—´æµ‹é‡ç²¾ç¡®åˆ°1usï¼Œä½¿ç”¨ç‡ç²¾ç¡®åˆ°0.1%
     if(i < (hRec->taskGroupNum - CPN_SCH_LEVEL0_GROUP_NUM_CFG)){
         ((hCpnSch)(hRec->CpnSch))->totalTaskTime += ((hCpnSch)(hRec->CpnSch))->currTaskTime;
     }else{
@@ -182,10 +182,10 @@ void SchSm_act_execute(void *SchSmRec){
     hRec->last = SchSm_sta_execute;
 }
 
-/*Ãû³Æ : SchSm_act_updateBgTask()
-* ÊäÈë : SchSmRec - ×´Ì¬¼ÇÂ¼²ÎÊıÖ¸Õë
-* Êä³ö : ÎŞ
-* ÆäËû : ×´Ì¬updateBgTask²Ù×÷º¯Êı
+/*åç§° : SchSm_act_updateBgTask()
+* è¾“å…¥ : SchSmRec - çŠ¶æ€è®°å½•å‚æ•°æŒ‡é’ˆ
+* è¾“å‡º : æ— 
+* å…¶ä»– : çŠ¶æ€updateBgTaskæ“ä½œå‡½æ•°
 ***********************************************/
 void SchSm_act_updateBgTask(void *SchSmRec){
     hSchSmRec hRec = (hSchSmRec)SchSmRec;
